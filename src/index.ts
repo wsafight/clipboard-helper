@@ -1,17 +1,21 @@
 import ClipboardJs from 'clipboard'
 import { convertImageToBlob } from './utils'
 
-const copyTextToClipboard = (textToCopy: string) => {
+const copyTextToClipboard = (text: string) => {
 
   if (!ClipboardJs.isSupported()) {
     return Promise.reject('The current browser does not support this feature')
+  }
+
+  if (!text || typeof text !== 'string') {
+    return Promise.reject('text must be a string')
   }
 
   return new Promise(function (resolve, reject) {
     const fakeBtn = document.createElement('button')
 
     const clipboard = new ClipboardJs(fakeBtn, {
-      text: () => textToCopy,
+      text: () => text,
       action: () => 'copy',
       container: document.body,
     })
@@ -37,11 +41,11 @@ const copyImageToClipboard = async (img: string | HTMLImageElement) => {
     return Promise.reject('The current browser does not support this feature')
   }
 
-  if (!img || (img !== 'string' && !(img instanceof HTMLImageElement))) {
+  if (!img || (typeof img !== 'string' && !(img instanceof HTMLImageElement))) {
     return Promise.reject('image must be a string or HTMLImageElement')
   }
 
-  if (img === 'string') {
+  if (typeof img === 'string') {
     return fetch(img).then(data => {
       return data.blob()
     }).then(blob => {

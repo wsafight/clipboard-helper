@@ -1,9 +1,11 @@
-import ClipboardJs from 'clipboard'
+import ClipboardJs, { isSupported } from 'clipboard'
 import { convertImageToBlob } from './utils'
+
+const isSupportText2Clipboard = isSupported
 
 const copyTextToClipboard = (text: string) => {
 
-  if (!ClipboardJs.isSupported()) {
+  if (!isSupported()) {
     return Promise.reject('The current browser does not support this feature')
   }
 
@@ -34,19 +36,22 @@ const copyTextToClipboard = (text: string) => {
   })
 }
 
-const copyImageToClipboard = async (img: string | HTMLImageElement) => {
+
+const isSupportFile2Clipboard = () => !!navigator?.clipboard?.write
+
+const copyFileToClipboard = async (urlOrImg: string | HTMLImageElement) => {
   const clipboard = navigator.clipboard
 
-  if (!clipboard) {
+  if (!clipboard || !clipboard.write) {
     return Promise.reject('The current browser does not support this feature')
   }
 
-  if (!img || (typeof img !== 'string' && !(img instanceof HTMLImageElement))) {
+  if (!urlOrImg || (typeof urlOrImg !== 'string' && !(urlOrImg instanceof HTMLImageElement))) {
     return Promise.reject('image must be a string or HTMLImageElement')
   }
 
-  if (typeof img === 'string') {
-    return fetch(img).then(data => {
+  if (typeof urlOrImg === 'string') {
+    return fetch(urlOrImg).then(data => {
       return data.blob()
     }).then(blob => {
       return clipboard.write([
@@ -57,7 +62,7 @@ const copyImageToClipboard = async (img: string | HTMLImageElement) => {
     })
   }
 
-  const blobFromImg =  convertImageToBlob(img)
+  const blobFromImg =  convertImageToBlob(urlOrImg)
 
   return clipboard.write([
     new ClipboardItem({
@@ -67,6 +72,8 @@ const copyImageToClipboard = async (img: string | HTMLImageElement) => {
 }
 
 export {
+  isSupportText2Clipboard,
+  isSupportFile2Clipboard,
   copyTextToClipboard,
-  copyImageToClipboard,
+  copyFileToClipboard,
 }

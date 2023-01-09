@@ -1,7 +1,7 @@
 import ClipboardJs, { isSupported } from 'clipboard'
 import { convertImageToBlob } from './utils'
 
-const isSupportText2Clipboard = isSupported
+const isSupportTextToClipboard = isSupported
 
 const copyTextToClipboard = (text: string) => {
 
@@ -37,7 +37,7 @@ const copyTextToClipboard = (text: string) => {
 }
 
 
-const isSupportFile2Clipboard = () => !!navigator?.clipboard?.write
+const isSupportFileToClipboard = () => !!navigator?.clipboard?.write
 
 const copyFileToClipboard = async (urlOrImg: string | HTMLImageElement) => {
   const clipboard = navigator.clipboard
@@ -71,9 +71,20 @@ const copyFileToClipboard = async (urlOrImg: string | HTMLImageElement) => {
   ])
 }
 
+const readTextFromClipboard = (): Promise<string> => {
+  const clipboard = navigator.clipboard
+
+  if (!clipboard || !clipboard.readText) {
+    return Promise.reject('The current browser does not support this feature')
+  }
+
+  return clipboard.readText()
+}
+
 export {
-  isSupportText2Clipboard,
-  isSupportFile2Clipboard,
+  isSupportTextToClipboard,
+  isSupportFileToClipboard,
   copyTextToClipboard,
   copyFileToClipboard,
+  readTextFromClipboard,
 }

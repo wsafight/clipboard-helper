@@ -2,7 +2,8 @@ const convertImageToCanvas = (image: HTMLImageElement, width: number, height: nu
   const canvas: HTMLCanvasElement = document.createElement('canvas')
   canvas.width = width
   canvas.height = height
-  canvas.getContext('2d')?.drawImage(image, 0, 0)
+  var ctx = canvas.getContext('2d')!
+  ctx.drawImage(image, 0, 0);
   return canvas
 }
 
@@ -33,6 +34,7 @@ export const convertImageToBlob = (
   img: HTMLImageElement,
   type: string = 'png'
 ): Blob => {
+  img.setAttribute('crossOrigin', 'anonymous');
   const { naturalHeight: height, naturalWidth: width } = img
   const canvas = convertImageToCanvas(img, width, height)
   return base64ToBlob(canvas.toDataURL(`image/${type}`), type)
